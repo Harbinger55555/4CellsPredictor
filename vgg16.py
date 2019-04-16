@@ -1,11 +1,13 @@
-from helper import plot_graphs
 import os
-from keras.preprocessing.image import ImageDataGenerator
-from keras.applications import VGG16
+import time
 from keras import models
 from keras import layers
+from keras.applications import VGG16
+from keras.callbacks import TensorBoard
+from keras.preprocessing.image import ImageDataGenerator
 
 
+TB_DIR = f'VGG16-{time.time()}'
 base_dir = './datasets'
 train_dir = os.path.join(base_dir, 'TRAIN')
 test_dir = os.path.join(base_dir, 'TEST')
@@ -39,23 +41,25 @@ conv_base.trainable = False
 
 model.add(conv_base)
 model.add(layers.Flatten())
+model.add(layers.Dense(256, activation='relu'))
+# model.add(layers.Dropout(0.2))
+model.add(layers.Dense(178, activation='relu'))
+# model.add(layers.Dropout(0.2))
 model.add(layers.Dense(100, activation='relu'))
-model.add(layers.Dense(100, activation='relu'))
-model.add(layers.Dense(100, activation='relu'))
+# model.add(layers.Dropout(0.3))
+# model.add(layers.Dense(100, activation='relu'))
+# model.add(layers.Dense(100, activation='relu'))
 model.add(layers.Dense(4, activation='softmax'))
 
-model.compile(
-    loss='categorical_crossentropy',
-    optimizer='rmsprop',
-    metrics=['acc']
-)
+model.compile(loss='categorical_crossentropy',
+              optimizer='rmsprop',
+              metrics=['acc'])
 
-history = model.fit_generator(
-    train_generator,
-    steps_per_epoch=100,
-    epochs=30,
-    validation_data=validation_generator,
-    validation_steps=50
-)
+tensorboard = TensorBoard(log_dir=f'logs/{TB_DIR}')
 
-plot_graphs(history)
+history = model.fit_generator(train_generator,
+                              steps_per_epoch=100,
+                              epochs=50,
+                              validation_data=validation_generator,
+                              validation_steps=50,
+                              callbacks=[tensorboard])
