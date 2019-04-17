@@ -2,12 +2,12 @@ import os
 import time
 from keras import models
 from keras import layers
-from keras.applications import VGG16
+from keras.applications import VGG19
 from keras.callbacks import TensorBoard
 from keras.preprocessing.image import ImageDataGenerator
 
 
-TB_DIR = f'VGG16-{time.time()}'
+TB_DIR = f'VGG19-{time.time()}'
 base_dir = './datasets'
 train_dir = os.path.join(base_dir, 'TRAIN')
 test_dir = os.path.join(base_dir, 'TEST')
@@ -30,7 +30,7 @@ validation_generator = train_datagen.flow_from_directory(**gen_args,
 model = models.Sequential()
 
 # Using a pretrained VGG16 conv_base.
-conv_base = VGG16(
+conv_base = VGG19(
     weights='imagenet',
     include_top=False,
     input_shape=(150, 150, 3)
