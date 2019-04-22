@@ -65,3 +65,5 @@ history = model.fit_generator(train_generator,
                               validation_data=validation_generator,
                               validation_steps=50,
                               callbacks=[tensorboard])
+
+model.save(f'{TB_DIR}.h5')
